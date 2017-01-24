@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -wd"
+    "dev": "webpack -wd",
+    "serve": "node server.js"
   },
   "author": "Muhammad Arafat Azam",
   "license": "ISC",
@@ -13,8 +14,10 @@
     "babel-loader": "^6.2.10",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.22.0",
+    "express": "^4.14.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "request": "^2.79.0",
     "webpack": "^1.14.0"
   }
 }

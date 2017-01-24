@@ -22057,6 +22057,10 @@
 	
 	var _Paragraph2 = _interopRequireDefault(_Paragraph);
 	
+	var _LineLengthInput = __webpack_require__(/*! ./LineLengthInput */ 181);
+	
+	var _LineLengthInput2 = _interopRequireDefault(_LineLengthInput);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22074,14 +22078,26 @@
 	        var _this = _possibleConstructorReturn(this, (Container.__proto__ || Object.getPrototypeOf(Container)).call(this));
 	
 	        _this.state = {
-	            text: null,
+	            textObj: null,
 	            loading: false
 	        };
 	        _this.loadText = _this.loadText.bind(_this);
+	        _this.updateLineLength = _this.updateLineLength.bind(_this);
 	        return _this;
 	    }
 	
 	    _createClass(Container, [{
+	        key: 'analyzedText',
+	        value: function analyzedText(text) {
+	            text = text.trim();
+	            var textObj = {};
+	            textObj.paragraphs = text.split('\n\n');
+	            textObj.maxWordLength = text.split(' ').reduce(function (max, word) {
+	                return Math.max(max, word.length);
+	            }, 0);
+	            return textObj;
+	        }
+	    }, {
 	        key: 'loadText',
 	        value: function loadText() {
 	            var _this2 = this;
@@ -22089,12 +22105,19 @@
 	            this.setState({ loading: true, text: null });
 	            var rand = Math.floor(Math.random() * 10 + 1);
 	            var url = "http://localhost:8081/proxy/api/" + rand + "/plaintext/long";
-	            console.log(url);
 	            fetch(url, { "mode": 'no-cors' }).then(function (response) {
 	                return response.text();
 	            }).then(function (text) {
-	                _this2.setState({ loading: false, text: text.trim() });
+	                var textObj = _this2.analyzedText(text);
+	                _this2.setState({ loading: false, textObj: textObj });
 	            });
+	        }
+	    }, {
+	        key: 'updateLineLength',
+	        value: function updateLineLength(length) {
+	            var textObj = this.state.textObj;
+	            textObj.lineLength = length;
+	            this.setState({ textObj: textObj });
 	        }
 	    }, {
 	        key: 'render',
@@ -22102,25 +22125,31 @@
 	            if (this.state.loading) {
 	                return _react2.default.createElement(_Spinner2.default, null);
 	            }
+	            var textObj = this.state.textObj;
+	            if (textObj) {
+	                var paragraphElements = textObj.paragraphs.map(function (para, index) {
+	                    return _react2.default.createElement(
+	                        _Paragraph2.default,
+	                        { lineLength: textObj.lineLength, key: index },
+	                        para
+	                    );
+	                });
+	                var lineLengthInput = _react2.default.createElement(_LineLengthInput2.default, { updateFunction: this.updateLineLength, label: 'Line Length:', min: textObj.maxWordLength });
+	            }
 	            return _react2.default.createElement(
 	                'div',
 	                null,
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
-	                    this.state.text && this.state.text.split('\n\n').map(function (line) {
-	                        return _react2.default.createElement(
-	                            _Paragraph2.default,
-	                            null,
-	                            line
-	                        );
-	                    })
+	                    paragraphElements
 	                ),
 	                _react2.default.createElement(
 	                    'button',
 	                    { onClick: this.loadText },
 	                    'Analyze Output'
-	                )
+	                ),
+	                lineLengthInput
 	            );
 	        }
 	    }]);
@@ -22247,6 +22276,84 @@
 	}(_react2.default.Component);
 	
 	exports.default = Paragraph;
+
+/***/ },
+/* 181 */
+/*!*******************************!*\
+  !*** ./js/LineLengthInput.js ***!
+  \*******************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LineLengthInput = function (_React$Component) {
+	    _inherits(LineLengthInput, _React$Component);
+	
+	    function LineLengthInput() {
+	        _classCallCheck(this, LineLengthInput);
+	
+	        var _this = _possibleConstructorReturn(this, (LineLengthInput.__proto__ || Object.getPrototypeOf(LineLengthInput)).call(this));
+	
+	        _this.state = { error: null };
+	        _this.inputDone = _this.inputDone.bind(_this);
+	        return _this;
+	    }
+	
+	    _createClass(LineLengthInput, [{
+	        key: "inputDone",
+	        value: function inputDone() {
+	            var _this2 = this;
+	
+	            if (this.timer) {
+	                clearInterval(this.timer);
+	            }
+	            this.timer = setInterval(function () {
+	                clearInterval(_this2.timer);
+	                _this2.props.updateFunction(_this2.refs.input.value);
+	            }, 900);
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "line-length-input" },
+	                _react2.default.createElement(
+	                    "label",
+	                    null,
+	                    this.props.label
+	                ),
+	                _react2.default.createElement(
+	                    "p",
+	                    null,
+	                    _react2.default.createElement("input", { ref: "input", onKeyDown: this.inputDone, type: "number", min: this.props.min })
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return LineLengthInput;
+	}(_react2.default.Component);
+	
+	exports.default = LineLengthInput;
 
 /***/ }
 /******/ ]);

@@ -22121,7 +22121,6 @@
 	                var t1 = window.performance.now();
 	                var loadingTime = t1 - t0;
 	                var textObj = _this2.getTextObj(text, loadingTime);
-	                console.log(textObj);
 	                _this2.setState({ loading: false, textObj: textObj });
 	            });
 	        }
@@ -22129,7 +22128,11 @@
 	        key: 'updateLineLength',
 	        value: function updateLineLength(length) {
 	            var textObj = this.state.textObj;
-	            textObj.lineLength = length;
+	            if (!length) {
+	                textObj.lineLength = null;
+	            } else if (length >= textObj.maxWordLength) {
+	                textObj.lineLength = length;
+	            }
 	            this.setState({ textObj: textObj });
 	        }
 	    }, {
@@ -22340,7 +22343,12 @@
 	            }
 	            this.timer = setInterval(function () {
 	                clearInterval(_this2.timer);
-	                _this2.props.updateFunction(_this2.refs.input.value);
+	                var updatedValue = _this2.refs.input.value;
+	                if (updatedValue < _this2.props.min) {
+	                    _this2.setState({ error: " Please give a value equal to or grater than: " + _this2.props.min });
+	                    return;
+	                }
+	                _this2.props.updateFunction(updatedValue);
 	            }, 900);
 	        }
 	    }, {
@@ -22357,7 +22365,12 @@
 	                _react2.default.createElement(
 	                    "p",
 	                    null,
-	                    _react2.default.createElement("input", { ref: "input", onKeyDown: this.inputDone, type: "number", min: this.props.min })
+	                    _react2.default.createElement("input", { ref: "input", onKeyDown: this.inputDone, type: "number", min: this.props.min }),
+	                    _react2.default.createElement(
+	                        "span",
+	                        { className: "error" },
+	                        this.state.error
+	                    )
 	                )
 	            );
 	        }

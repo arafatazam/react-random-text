@@ -49,7 +49,6 @@ class Container extends React.Component{
                 var t1 = window.performance.now();
                 var loadingTime = t1-t0;
                 var textObj = this.getTextObj(text, loadingTime);
-                console.log(textObj);
                 this.setState({loading: false, textObj:textObj});
             });
     }
@@ -57,7 +56,11 @@ class Container extends React.Component{
 
     updateLineLength(length){
         var textObj = this.state.textObj;
-        textObj.lineLength = length;
+        if(!length){
+            textObj.lineLength = null;
+        }else if(length>=textObj.maxWordLength){
+            textObj.lineLength = length;
+        }
         this.setState({textObj: textObj});
     }
 

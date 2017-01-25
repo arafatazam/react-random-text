@@ -14,7 +14,12 @@ class LineLengthInput extends React.Component{
         }
         this.timer = setInterval(()=>{
             clearInterval(this.timer);
-            this.props.updateFunction(this.refs.input.value);
+            var updatedValue = this.refs.input.value;
+            if(updatedValue<this.props.min){
+                this.setState({error: " Please give a value equal to or grater than: " + this.props.min});
+                return;
+            }
+            this.props.updateFunction(updatedValue);
         },900);
     }
 
@@ -22,7 +27,8 @@ class LineLengthInput extends React.Component{
         return (
             <div className="line-length-input">
                 <label>{this.props.label}</label>
-                <p><input ref="input" onKeyDown={this.inputDone} type="number" min={this.props.min}/></p>
+                <p><input ref="input" onKeyDown={this.inputDone} type="number" min={this.props.min}/><span className="error">{this.state.error}</span></p>
+
             </div>
         );
     }

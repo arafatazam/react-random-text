@@ -17,6 +17,7 @@ class StorageObj{
 
     store(){
         localStorage.setItem(this.key, JSON.stringify(this.data));
+        this.loaded=false;
     }
 
     load(){
@@ -47,15 +48,30 @@ class StorageObj{
             return null;
         }
         return this.data.items[this.data.cursor];
-        this.store();
     }
 
     getNext(){
         this.load();
-        if(!this.data.cursor){
+        if(this.data.cursor==null){
             return null;
         }
-        this.data.cursor = (this.data.cursor+1)%this.max;
+        var size = this.data.items.length;
+        this.data.cursor = (this.data.cursor+1)%size;
+        this.store();
+        return this.get();
+    }
+
+    getPrev(){
+        this.load();
+        if(this.data.cursor==null){
+            return null;
+        }
+        var size = this.data.items.length;
+        this.data.cursor--;
+        if(this.data.cursor<0){
+            this.data.cursor+=size;
+        }
+        this.store();
         return this.get();
     }
 

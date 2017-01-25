@@ -23,6 +23,16 @@ class Container extends React.Component{
         this.updateLineLength = this.updateLineLength.bind(this);
         this.showFullText = this.showFullText.bind(this);
         this.deleteStorage = this.deleteStorage.bind(this);
+        this.historyNext = this.historyNext.bind(this);
+        this.historyPrev = this.historyPrev.bind(this);
+    }
+
+    historyNext(){
+        this.setState({textObj: this.storage.getNext()});
+    }
+
+    historyPrev(){
+        this.setState({textObj: this.storage.getPrev()});
     }
 
     deleteStorage(){
@@ -84,6 +94,8 @@ class Container extends React.Component{
                                     size = {textObj.size}
                                 />);
             var fullTextBtn = <button className="btn btn-primary" onClick={this.showFullText}>Full Text</button>;
+            var historyNext = <button className="btn btn-default" onClick={this.historyNext}>Next</button>;
+            var historyPrev = <button className="btn btn-default" onClick={this.historyPrev}>Prev</button>;
             var removeHistoryBtn = <button className="btn btn-danger" onClick={this.deleteStorage}>Remove History</button>;
         }
 
@@ -93,6 +105,8 @@ class Container extends React.Component{
                 <button className="btn btn-success" onClick={this.loadText}>Analyze Output</button>
                 {fullTextBtn}
                 {removeHistoryBtn}
+                {historyPrev}
+                {historyNext}
                 {lineLengthInput}
                 {information}
                 {textWindow}

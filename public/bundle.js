@@ -22101,10 +22101,22 @@
 	        _this.updateLineLength = _this.updateLineLength.bind(_this);
 	        _this.showFullText = _this.showFullText.bind(_this);
 	        _this.deleteStorage = _this.deleteStorage.bind(_this);
+	        _this.historyNext = _this.historyNext.bind(_this);
+	        _this.historyPrev = _this.historyPrev.bind(_this);
 	        return _this;
 	    }
 	
 	    _createClass(Container, [{
+	        key: 'historyNext',
+	        value: function historyNext() {
+	            this.setState({ textObj: this.storage.getNext() });
+	        }
+	    }, {
+	        key: 'historyPrev',
+	        value: function historyPrev() {
+	            this.setState({ textObj: this.storage.getPrev() });
+	        }
+	    }, {
 	        key: 'deleteStorage',
 	        value: function deleteStorage() {
 	            this.storage.destroy();
@@ -22176,6 +22188,16 @@
 	                    { className: 'btn btn-primary', onClick: this.showFullText },
 	                    'Full Text'
 	                );
+	                var historyNext = _react2.default.createElement(
+	                    'button',
+	                    { className: 'btn btn-default', onClick: this.historyNext },
+	                    'Next'
+	                );
+	                var historyPrev = _react2.default.createElement(
+	                    'button',
+	                    { className: 'btn btn-default', onClick: this.historyPrev },
+	                    'Prev'
+	                );
 	                var removeHistoryBtn = _react2.default.createElement(
 	                    'button',
 	                    { className: 'btn btn-danger', onClick: this.deleteStorage },
@@ -22193,6 +22215,8 @@
 	                ),
 	                fullTextBtn,
 	                removeHistoryBtn,
+	                historyPrev,
+	                historyNext,
 	                lineLengthInput,
 	                information,
 	                textWindow
@@ -22720,6 +22744,7 @@
 	        key: 'store',
 	        value: function store() {
 	            localStorage.setItem(this.key, JSON.stringify(this.data));
+	            this.loaded = false;
 	        }
 	    }, {
 	        key: 'load',
@@ -22753,16 +22778,32 @@
 	                return null;
 	            }
 	            return this.data.items[this.data.cursor];
-	            this.store();
 	        }
 	    }, {
 	        key: 'getNext',
 	        value: function getNext() {
 	            this.load();
-	            if (!this.data.cursor) {
+	            if (this.data.cursor == null) {
 	                return null;
 	            }
-	            this.data.cursor = (this.data.cursor + 1) % this.max;
+	            var size = this.data.items.length;
+	            this.data.cursor = (this.data.cursor + 1) % size;
+	            this.store();
+	            return this.get();
+	        }
+	    }, {
+	        key: 'getPrev',
+	        value: function getPrev() {
+	            this.load();
+	            if (this.data.cursor == null) {
+	                return null;
+	            }
+	            var size = this.data.items.length;
+	            this.data.cursor--;
+	            if (this.data.cursor < 0) {
+	                this.data.cursor += size;
+	            }
+	            this.store();
 	            return this.get();
 	        }
 	    }, {

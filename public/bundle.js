@@ -22209,16 +22209,41 @@
 	                'div',
 	                null,
 	                _react2.default.createElement(
-	                    'button',
-	                    { className: 'btn btn-success', onClick: this.loadText },
-	                    'Analyze Output'
+	                    'div',
+	                    { className: 'row' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col-xs-12 col-sm-6' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'panel panel-primary' },
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'panel-heading' },
+	                                'Controls'
+	                            ),
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'panel-body' },
+	                                _react2.default.createElement(
+	                                    'button',
+	                                    { className: 'btn btn-success', onClick: this.loadText },
+	                                    'Analyze Output'
+	                                ),
+	                                fullTextBtn,
+	                                removeHistoryBtn,
+	                                historyPrev,
+	                                historyNext,
+	                                lineLengthInput
+	                            )
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col-xs-12 col-sm-6' },
+	                        information
+	                    )
 	                ),
-	                fullTextBtn,
-	                removeHistoryBtn,
-	                historyPrev,
-	                historyNext,
-	                lineLengthInput,
-	                information,
 	                textWindow
 	            );
 	        }

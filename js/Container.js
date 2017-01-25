@@ -102,13 +102,26 @@ class Container extends React.Component{
 
         return (
             <div>
-                <button className="btn btn-success" onClick={this.loadText}>Analyze Output</button>
-                {fullTextBtn}
-                {removeHistoryBtn}
-                {historyPrev}
-                {historyNext}
-                {lineLengthInput}
-                {information}
+                <div className="row">
+                    <div className="col-xs-12 col-sm-6">
+                        <div className="panel panel-primary">
+                            <div className="panel-heading">
+                                Controls
+                            </div>
+                            <div className="panel-body">
+                                <button className="btn btn-success" onClick={this.loadText}>Analyze Output</button>
+                                {fullTextBtn}
+                                {removeHistoryBtn}
+                                {historyPrev}
+                                {historyNext}
+                                {lineLengthInput}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-xs-12 col-sm-6">
+                        {information}
+                    </div>
+                </div>
                 {textWindow}
             </div>
         );

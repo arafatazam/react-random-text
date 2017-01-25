@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack -wd",
-    "serve": "node server.js"
+    "server": "node server.js"
   },
   "author": "Muhammad Arafat Azam",
   "license": "ISC",

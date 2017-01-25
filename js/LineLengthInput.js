@@ -17,7 +17,9 @@ class LineLengthInput extends React.Component{
             var updatedValue = this.refs.input.value;
             if(updatedValue<this.props.min){
                 this.setState({error: " Please give a value equal to or grater than: " + this.props.min});
-                return;
+                updatedValue=null;
+            }else{
+                this.setState({error: null});
             }
             this.props.updateFunction(updatedValue);
         },900);

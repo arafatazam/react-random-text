@@ -11,17 +11,33 @@ class TextBox extends React.Component{
             if(paragraphs.length>3){
                 paragraphs = paragraphs.slice(-1);
             }else{
-                return <div className="text-box"><p className="message">Less than 3 Paragraphs loaded</p></div>
+                return (
+                    <div className="panel panel-info text-box">
+                        <div className="panel-heading">
+                            Text Window
+                        </div>
+                        <div className="panel-body">
+                            <p className="text-info">Less than 3 Paragraphs loaded</p>
+                        </div>
+                    </div>
+                );
             }
         }
 
-        return (<div className="text-box">
-            {paragraphs.map(
-                (paragraph, index)=>{
-                    return (<Paragraph key={index} lineLength={this.props.lineLength}>{paragraph}</Paragraph>);
-                }
-            )}
-        </div>)
+        return (
+                <div className="panel panel-info text-box">
+                    <div className="panel-heading">
+                        Text Window
+                    </div>
+                    <div className="panel-body">
+                        {paragraphs.map(
+                            (paragraph, index)=>{
+                                return (<Paragraph key={index} lineLength={this.props.lineLength}>{paragraph}</Paragraph>);
+                            }
+                        )}
+                    </div>
+                </div>
+        );
     }
 
 }

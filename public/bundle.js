@@ -22053,21 +22053,25 @@
 	
 	var _Spinner2 = _interopRequireDefault(_Spinner);
 	
-	var _TextBox = __webpack_require__(/*! ./TextBox */ 184);
+	var _TextBox = __webpack_require__(/*! ./TextBox */ 180);
 	
 	var _TextBox2 = _interopRequireDefault(_TextBox);
 	
-	var _LineLengthInput = __webpack_require__(/*! ./LineLengthInput */ 181);
+	var _LineLengthInput = __webpack_require__(/*! ./LineLengthInput */ 182);
 	
 	var _LineLengthInput2 = _interopRequireDefault(_LineLengthInput);
 	
-	var _InfoBox = __webpack_require__(/*! ./InfoBox */ 182);
+	var _InfoBox = __webpack_require__(/*! ./InfoBox */ 183);
 	
 	var _InfoBox2 = _interopRequireDefault(_InfoBox);
 	
-	var _TextObj = __webpack_require__(/*! ./TextObj */ 183);
+	var _TextObj = __webpack_require__(/*! ./TextObj */ 184);
 	
 	var _TextObj2 = _interopRequireDefault(_TextObj);
+	
+	var _StorageObj = __webpack_require__(/*! ./StorageObj */ 185);
+	
+	var _StorageObj2 = _interopRequireDefault(_StorageObj);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -22085,17 +22089,28 @@
 	
 	        var _this = _possibleConstructorReturn(this, (Container.__proto__ || Object.getPrototypeOf(Container)).call(this));
 	
+	        _this.storage = new _StorageObj2.default();
+	
 	        _this.state = {
-	            textObj: null,
+	            textObj: _this.storage.get(),
 	            loading: false,
 	            fullText: false
 	        };
+	
 	        _this.loadText = _this.loadText.bind(_this);
 	        _this.updateLineLength = _this.updateLineLength.bind(_this);
+	        _this.showFullText = _this.showFullText.bind(_this);
+	        _this.deleteStorage = _this.deleteStorage.bind(_this);
 	        return _this;
 	    }
 	
 	    _createClass(Container, [{
+	        key: 'deleteStorage',
+	        value: function deleteStorage() {
+	            this.storage.destroy();
+	            this.setState({ textObj: null });
+	        }
+	    }, {
 	        key: 'loadText',
 	        value: function loadText() {
 	            var _this2 = this;
@@ -22111,15 +22126,22 @@
 	                var t1 = window.performance.now();
 	                var loadingTime = t1 - t0;
 	                var textObj = new _TextObj2.default(text, loadingTime);
-	                _this2.setState({ loading: false, textObj: textObj });
+	                _this2.storage.put(textObj);
+	                _this2.setState({ loading: false, textObj: textObj, fullText: false });
 	            });
+	        }
+	    }, {
+	        key: 'showFullText',
+	        value: function showFullText() {
+	            this.setState({ fullText: !this.state.fullText });
 	        }
 	    }, {
 	        key: 'updateLineLength',
 	        value: function updateLineLength(length) {
 	            var textObj = this.state.textObj;
+	            console.log(!length);
 	            if (!length) {
-	                textObj.lineLength = null;
+	                delete textObj.lineLength;
 	            } else if (length >= textObj.maxWordLength) {
 	                textObj.lineLength = length;
 	            }
@@ -22149,19 +22171,31 @@
 	                    processingTime: textObj.processingTime,
 	                    size: textObj.size
 	                });
+	                var fullTextBtn = _react2.default.createElement(
+	                    'button',
+	                    { className: 'btn btn-primary', onClick: this.showFullText },
+	                    'Full Text'
+	                );
+	                var removeHistoryBtn = _react2.default.createElement(
+	                    'button',
+	                    { className: 'btn btn-danger', onClick: this.deleteStorage },
+	                    'Remove History'
+	                );
 	            }
 	
 	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                textWindow,
-	                information,
 	                _react2.default.createElement(
 	                    'button',
-	                    { onClick: this.loadText },
+	                    { className: 'btn btn-success', onClick: this.loadText },
 	                    'Analyze Output'
 	                ),
-	                lineLengthInput
+	                fullTextBtn,
+	                removeHistoryBtn,
+	                lineLengthInput,
+	                information,
+	                textWindow
 	            );
 	        }
 	    }]);
@@ -22221,6 +22255,106 @@
 
 /***/ },
 /* 180 */
+/*!***********************!*\
+  !*** ./js/TextBox.js ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _Paragraph = __webpack_require__(/*! ./Paragraph */ 181);
+	
+	var _Paragraph2 = _interopRequireDefault(_Paragraph);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TextBox = function (_React$Component) {
+	    _inherits(TextBox, _React$Component);
+	
+	    function TextBox() {
+	        _classCallCheck(this, TextBox);
+	
+	        return _possibleConstructorReturn(this, (TextBox.__proto__ || Object.getPrototypeOf(TextBox)).apply(this, arguments));
+	    }
+	
+	    _createClass(TextBox, [{
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var paragraphs = this.props.children.trim().split('\n\n');
+	
+	            if (!this.props.fullText) {
+	                if (paragraphs.length > 3) {
+	                    paragraphs = paragraphs.slice(-1);
+	                } else {
+	                    return _react2.default.createElement(
+	                        'div',
+	                        { className: 'panel panel-info text-box' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'panel-heading' },
+	                            'Text Window'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'panel-body' },
+	                            _react2.default.createElement(
+	                                'p',
+	                                { className: 'text-info' },
+	                                'Less than 3 Paragraphs loaded'
+	                            )
+	                        )
+	                    );
+	                }
+	            }
+	
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'panel panel-info text-box' },
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'panel-heading' },
+	                    'Text Window'
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'panel-body' },
+	                    paragraphs.map(function (paragraph, index) {
+	                        return _react2.default.createElement(
+	                            _Paragraph2.default,
+	                            { key: index, lineLength: _this2.props.lineLength },
+	                            paragraph
+	                        );
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return TextBox;
+	}(_react2.default.Component);
+	
+	exports.default = TextBox;
+
+/***/ },
+/* 181 */
 /*!*************************!*\
   !*** ./js/Paragraph.js ***!
   \*************************/
@@ -22290,7 +22424,7 @@
 	exports.default = Paragraph;
 
 /***/ },
-/* 181 */
+/* 182 */
 /*!*******************************!*\
   !*** ./js/LineLengthInput.js ***!
   \*******************************/
@@ -22342,7 +22476,9 @@
 	                var updatedValue = _this2.refs.input.value;
 	                if (updatedValue < _this2.props.min) {
 	                    _this2.setState({ error: " Please give a value equal to or grater than: " + _this2.props.min });
-	                    return;
+	                    updatedValue = null;
+	                } else {
+	                    _this2.setState({ error: null });
 	                }
 	                _this2.props.updateFunction(updatedValue);
 	            }, 900);
@@ -22378,13 +22514,13 @@
 	exports.default = LineLengthInput;
 
 /***/ },
-/* 182 */
+/* 183 */
 /*!***********************!*\
   !*** ./js/InfoBox.js ***!
   \***********************/
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -22414,79 +22550,88 @@
 	    }
 	
 	    _createClass(InfoBox, [{
-	        key: 'render',
+	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
-	                'dl',
-	                { className: 'info-box' },
+	                "div",
+	                { className: "panel panel-success" },
 	                _react2.default.createElement(
-	                    'dt',
-	                    null,
-	                    'Number of Paragraphs:'
+	                    "div",
+	                    { className: "panel-heading" },
+	                    "Analysis"
 	                ),
 	                _react2.default.createElement(
-	                    'dd',
-	                    null,
-	                    this.props.paragraphs
-	                ),
-	                _react2.default.createElement(
-	                    'dt',
-	                    null,
-	                    'Sentences in the paragraphs:'
-	                ),
-	                _react2.default.createElement(
-	                    'dd',
-	                    null,
-	                    this.props.sentencesInParagraphs.reduce(function (str, number) {
-	                        if (str.length > 0) {
-	                            str += ', ';
-	                        }
-	                        str += number;
-	                        return str;
-	                    }, '')
-	                ),
-	                _react2.default.createElement(
-	                    'dt',
-	                    null,
-	                    'Word count:'
-	                ),
-	                _react2.default.createElement(
-	                    'dd',
-	                    null,
-	                    this.props.wordCount
-	                ),
-	                _react2.default.createElement(
-	                    'dt',
-	                    null,
-	                    'Size:'
-	                ),
-	                _react2.default.createElement(
-	                    'dd',
-	                    null,
-	                    this.props.size,
-	                    ' Bytes'
-	                ),
-	                _react2.default.createElement(
-	                    'dt',
-	                    null,
-	                    'Loading time:'
-	                ),
-	                _react2.default.createElement(
-	                    'dd',
-	                    null,
-	                    this.props.loadingTime,
-	                    ' milliseconds'
-	                ),
-	                _react2.default.createElement(
-	                    'dt',
-	                    null,
-	                    'Processing time:'
-	                ),
-	                _react2.default.createElement(
-	                    'dd',
-	                    null,
-	                    this.props.processingTime,
-	                    ' milliseconds'
+	                    "div",
+	                    { className: "panel-body" },
+	                    _react2.default.createElement(
+	                        "dt",
+	                        null,
+	                        "Number of Paragraphs:"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dd",
+	                        null,
+	                        this.props.paragraphs
+	                    ),
+	                    _react2.default.createElement(
+	                        "dt",
+	                        null,
+	                        "Sentences in the paragraphs:"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dd",
+	                        null,
+	                        this.props.sentencesInParagraphs.reduce(function (str, number) {
+	                            if (str.length > 0) {
+	                                str += ', ';
+	                            }
+	                            str += number;
+	                            return str;
+	                        }, '')
+	                    ),
+	                    _react2.default.createElement(
+	                        "dt",
+	                        null,
+	                        "Word count:"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dd",
+	                        null,
+	                        this.props.wordCount
+	                    ),
+	                    _react2.default.createElement(
+	                        "dt",
+	                        null,
+	                        "Size:"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dd",
+	                        null,
+	                        this.props.size,
+	                        " Bytes"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dt",
+	                        null,
+	                        "Loading time:"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dd",
+	                        null,
+	                        this.props.loadingTime,
+	                        " milliseconds"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dt",
+	                        null,
+	                        "Processing time:"
+	                    ),
+	                    _react2.default.createElement(
+	                        "dd",
+	                        null,
+	                        this.props.processingTime,
+	                        " milliseconds"
+	                    )
 	                )
 	            );
 	        }
@@ -22498,7 +22643,7 @@
 	exports.default = InfoBox;
 
 /***/ },
-/* 183 */
+/* 184 */
 /*!***********************!*\
   !*** ./js/TextObj.js ***!
   \***********************/
@@ -22522,7 +22667,7 @@
 	    this.loadingTime = loadingTime;
 	    this.size = rawText.length;
 	    this.wordCount = rawText.match(/(\s|$|^)\w/g).length;
-	    this.maxWordLength = rawText.split(' ').reduce(function (max, word) {
+	    this.maxWordLength = rawText.split(/\s/g).reduce(function (max, word) {
 	        return Math.max(max, word.length);
 	    }, 0);
 	    this.sentencesInParagraphs = rawText.trim().split('\n\n').map(function (para) {
@@ -22536,11 +22681,11 @@
 	exports.default = TextObj;
 
 /***/ },
-/* 184 */
-/*!***********************!*\
-  !*** ./js/TextBox.js ***!
-  \***********************/
-/***/ function(module, exports, __webpack_require__) {
+/* 185 */
+/*!**************************!*\
+  !*** ./js/StorageObj.js ***!
+  \**************************/
+/***/ function(module, exports) {
 
 	'use strict';
 	
@@ -22550,72 +22695,89 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _react = __webpack_require__(/*! react */ 1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _Paragraph = __webpack_require__(/*! ./Paragraph */ 180);
-	
-	var _Paragraph2 = _interopRequireDefault(_Paragraph);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	// To save to and load from local storage
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var StorageObj = function () {
+	    function StorageObj() {
+	        _classCallCheck(this, StorageObj);
 	
-	var TextBox = function (_React$Component) {
-	    _inherits(TextBox, _React$Component);
-	
-	    function TextBox() {
-	        _classCallCheck(this, TextBox);
-	
-	        return _possibleConstructorReturn(this, (TextBox.__proto__ || Object.getPrototypeOf(TextBox)).apply(this, arguments));
+	        this.key = 'hakunamatata3210';
+	        this.max = 5;
+	        this.loaded = false;
 	    }
 	
-	    _createClass(TextBox, [{
-	        key: 'render',
-	        value: function render() {
-	            var _this2 = this;
-	
-	            var paragraphs = this.props.children.trim().split('\n\n');
-	
-	            if (!this.props.fullText) {
-	                if (paragraphs.length > 3) {
-	                    paragraphs = paragraphs.slice(-1);
-	                } else {
-	                    return _react2.default.createElement(
-	                        'div',
-	                        { className: 'text-box' },
-	                        _react2.default.createElement(
-	                            'p',
-	                            { className: 'message' },
-	                            'Less than 3 Paragraphs loaded'
-	                        )
-	                    );
-	                }
+	    _createClass(StorageObj, [{
+	        key: 'getDefaultData',
+	        value: function getDefaultData() {
+	            return {
+	                cursor: null,
+	                items: []
+	            };
+	        }
+	    }, {
+	        key: 'store',
+	        value: function store() {
+	            localStorage.setItem(this.key, JSON.stringify(this.data));
+	        }
+	    }, {
+	        key: 'load',
+	        value: function load() {
+	            if (this.loaded) {
+	                return;
 	            }
-	
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'text-box' },
-	                paragraphs.map(function (paragraph, index) {
-	                    return _react2.default.createElement(
-	                        _Paragraph2.default,
-	                        { key: index, lineLength: _this2.props.lineLength },
-	                        paragraph
-	                    );
-	                })
-	            );
+	            this.data = JSON.parse(localStorage.getItem(this.key));
+	            if (!this.data) {
+	                this.data = this.getDefaultData();
+	                this.store();
+	            }
+	            this.loaded = true;
+	        }
+	    }, {
+	        key: 'put',
+	        value: function put(obj) {
+	            this.load();
+	            this.data.items.push(obj);
+	            while (this.data.items.length > this.max) {
+	                this.data.items.shift();
+	            }
+	            this.data.cursor = this.data.items.length - 1;
+	            this.store();
+	        }
+	    }, {
+	        key: 'get',
+	        value: function get() {
+	            this.load();
+	            if (this.data.cursor == null) {
+	                return null;
+	            }
+	            return this.data.items[this.data.cursor];
+	            this.store();
+	        }
+	    }, {
+	        key: 'getNext',
+	        value: function getNext() {
+	            this.load();
+	            if (!this.data.cursor) {
+	                return null;
+	            }
+	            this.data.cursor = (this.data.cursor + 1) % this.max;
+	            return this.get();
+	        }
+	    }, {
+	        key: 'destroy',
+	        value: function destroy() {
+	            localStorage.removeItem(this.key);
+	            this.loaded = false;
+	            this.load();
 	        }
 	    }]);
 	
-	    return TextBox;
-	}(_react2.default.Component);
+	    return StorageObj;
+	}();
 	
-	exports.default = TextBox;
+	exports.default = StorageObj;
 
 /***/ }
 /******/ ]);

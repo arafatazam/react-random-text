@@ -7,7 +7,7 @@ class TextObj{
         this.loadingTime = loadingTime;
         this.size = rawText.length;
         this.wordCount = rawText.match(/(\s|$|^)\w/g).length;
-        this.maxWordLength = rawText.split(' ')
+        this.maxWordLength = rawText.split(/\s/g)
                                 .reduce((max, word)=>{
                                     return Math.max(max,word.length);
                                 },0);

@@ -4,18 +4,30 @@ import TextBox from './TextBox';
 import LineLengthInput from  './LineLengthInput';
 import InfoBox from './InfoBox';
 import TextObj from './TextObj';
+import StorageObj from './StorageObj';
+
 
 class Container extends React.Component{
 
     constructor(){
         super();
+        this.storage = new StorageObj();
+
         this.state = {
-            textObj: null,
+            textObj: this.storage.get(),
             loading: false,
             fullText: false
         };
+
         this.loadText = this.loadText.bind(this);
         this.updateLineLength = this.updateLineLength.bind(this);
+        this.showFullText = this.showFullText.bind(this);
+        this.deleteStorage = this.deleteStorage.bind(this);
+    }
+
+    deleteStorage(){
+        this.storage.destroy();
+        this.setState({textObj:null});
     }
 
     loadText(){
@@ -31,15 +43,20 @@ class Container extends React.Component{
                 var t1 = window.performance.now();
                 var loadingTime = t1-t0;
                 var textObj = new TextObj(text, loadingTime);
-                this.setState({loading: false, textObj:textObj});
+                this.storage.put(textObj);
+                this.setState({loading: false, textObj:textObj, fullText: false});
             });
     }
 
+    showFullText(){
+        this.setState({fullText: !this.state.fullText});
+    }
 
     updateLineLength(length){
         var textObj = this.state.textObj;
+        console.log(!length);
         if(!length){
-            textObj.lineLength = null;
+            delete textObj.lineLength;
         }else if(length>=textObj.maxWordLength){
             textObj.lineLength = length;
         }
@@ -66,15 +83,19 @@ class Container extends React.Component{
                                     processingTime = {textObj.processingTime}
                                     size = {textObj.size}
                                 />);
+            var fullTextBtn = <button className="btn btn-primary" onClick={this.showFullText}>Full Text</button>;
+            var removeHistoryBtn = <button className="btn btn-danger" onClick={this.deleteStorage}>Remove History</button>;
         }
 
 
         return (
             <div>
-                {textWindow}
-                {information}
-                <button onClick={this.loadText}>Analyze Output</button>
+                <button className="btn btn-success" onClick={this.loadText}>Analyze Output</button>
+                {fullTextBtn}
+                {removeHistoryBtn}
                 {lineLengthInput}
+                {information}
+                {textWindow}
             </div>
         );
     }

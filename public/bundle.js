@@ -22061,6 +22061,10 @@
 	
 	var _LineLengthInput2 = _interopRequireDefault(_LineLengthInput);
 	
+	var _InfoBox = __webpack_require__(/*! ./InfoBox */ 182);
+	
+	var _InfoBox2 = _interopRequireDefault(_InfoBox);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22086,13 +22090,17 @@
 	        return _this;
 	    }
 	
+	    // Text object is the main container which I'll be storing in the storage
+	
+	
 	    _createClass(Container, [{
 	        key: 'getTextObj',
 	        value: function getTextObj(rawText, loadingTime) {
 	            var t0 = window.performance.now();
 	            var text = rawText.trim();
 	            var textObj = { loadingTime: loadingTime };
-	            textObj.wordcount = text.match(/(\s|$|^)\w/g).length;
+	            textObj.size = rawText.length;
+	            textObj.wordCount = text.match(/(\s|$|^)\w/g).length;
 	            textObj.maxWordLength = text.split(' ').reduce(function (max, word) {
 	                return Math.max(max, word.length);
 	            }, 0);
@@ -22141,6 +22149,7 @@
 	            if (this.state.loading) {
 	                return _react2.default.createElement(_Spinner2.default, null);
 	            }
+	
 	            var textObj = this.state.textObj;
 	            if (textObj) {
 	                var paragraphElements = textObj.paragraphs.map(function (paraObj, index) {
@@ -22151,7 +22160,18 @@
 	                    );
 	                });
 	                var lineLengthInput = _react2.default.createElement(_LineLengthInput2.default, { updateFunction: this.updateLineLength, label: 'Line Length:', min: textObj.maxWordLength });
+	                var information = _react2.default.createElement(_InfoBox2.default, {
+	                    paragraphs: textObj.paragraphs.length,
+	                    sentencesInParagraphs: textObj.paragraphs.map(function (paraObj) {
+	                        return paraObj.sentences;
+	                    }),
+	                    wordCount: textObj.wordCount,
+	                    loadingTime: textObj.loadingTime,
+	                    processingTime: textObj.processingTime,
+	                    size: textObj.size
+	                });
 	            }
+	
 	            return _react2.default.createElement(
 	                'div',
 	                null,
@@ -22160,6 +22180,7 @@
 	                    null,
 	                    paragraphElements
 	                ),
+	                information,
 	                _react2.default.createElement(
 	                    'button',
 	                    { onClick: this.loadText },
@@ -22380,6 +22401,126 @@
 	}(_react2.default.Component);
 	
 	exports.default = LineLengthInput;
+
+/***/ },
+/* 182 */
+/*!***********************!*\
+  !*** ./js/InfoBox.js ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var InfoBox = function (_React$Component) {
+	    _inherits(InfoBox, _React$Component);
+	
+	    function InfoBox() {
+	        _classCallCheck(this, InfoBox);
+	
+	        return _possibleConstructorReturn(this, (InfoBox.__proto__ || Object.getPrototypeOf(InfoBox)).apply(this, arguments));
+	    }
+	
+	    _createClass(InfoBox, [{
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'dl',
+	                { className: 'info-box' },
+	                _react2.default.createElement(
+	                    'dt',
+	                    null,
+	                    'Number of Paragraphs:'
+	                ),
+	                _react2.default.createElement(
+	                    'dd',
+	                    null,
+	                    this.props.paragraphs
+	                ),
+	                _react2.default.createElement(
+	                    'dt',
+	                    null,
+	                    'Sentences in the paragraphs:'
+	                ),
+	                _react2.default.createElement(
+	                    'dd',
+	                    null,
+	                    this.props.sentencesInParagraphs.reduce(function (str, number) {
+	                        if (str.length > 0) {
+	                            str += ', ';
+	                        }
+	                        str += number;
+	                        return str;
+	                    }, '')
+	                ),
+	                _react2.default.createElement(
+	                    'dt',
+	                    null,
+	                    'Word count:'
+	                ),
+	                _react2.default.createElement(
+	                    'dd',
+	                    null,
+	                    this.props.wordCount
+	                ),
+	                _react2.default.createElement(
+	                    'dt',
+	                    null,
+	                    'Size:'
+	                ),
+	                _react2.default.createElement(
+	                    'dd',
+	                    null,
+	                    this.props.size,
+	                    ' Bytes'
+	                ),
+	                _react2.default.createElement(
+	                    'dt',
+	                    null,
+	                    'Loading time:'
+	                ),
+	                _react2.default.createElement(
+	                    'dd',
+	                    null,
+	                    this.props.loadingTime,
+	                    ' milliseconds'
+	                ),
+	                _react2.default.createElement(
+	                    'dt',
+	                    null,
+	                    'Processing time:'
+	                ),
+	                _react2.default.createElement(
+	                    'dd',
+	                    null,
+	                    this.props.processingTime,
+	                    ' milliseconds'
+	                )
+	            );
+	        }
+	    }]);
+	
+	    return InfoBox;
+	}(_react2.default.Component);
+	
+	exports.default = InfoBox;
 
 /***/ }
 /******/ ]);

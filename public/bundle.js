@@ -22087,14 +22087,22 @@
 	    }
 	
 	    _createClass(Container, [{
-	        key: 'analyzedText',
-	        value: function analyzedText(text) {
-	            text = text.trim();
-	            var textObj = {};
-	            textObj.paragraphs = text.split('\n\n');
+	        key: 'getTextObj',
+	        value: function getTextObj(rawText, loadingTime) {
+	            var t0 = window.performance.now();
+	            var text = rawText.trim();
+	            var textObj = { loadingTime: loadingTime };
+	            textObj.wordcount = text.match(/(\s|$|^)\w/g).length;
 	            textObj.maxWordLength = text.split(' ').reduce(function (max, word) {
 	                return Math.max(max, word.length);
 	            }, 0);
+	            textObj.paragraphs = text.split('\n\n').map(function (para) {
+	                var paraObj = { text: para };
+	                paraObj.sentences = para.match(/\w[.?!](\s|$)/g).length;
+	                return paraObj;
+	            });
+	            var t1 = window.performance.now();
+	            textObj.processingTime = t1 - t0;
 	            return textObj;
 	        }
 	    }, {
@@ -22105,10 +22113,15 @@
 	            this.setState({ loading: true, text: null });
 	            var rand = Math.floor(Math.random() * 10 + 1);
 	            var url = "http://localhost:8081/proxy/api/" + rand + "/plaintext/long";
+	
+	            var t0 = window.performance.now();
 	            fetch(url, { "mode": 'no-cors' }).then(function (response) {
 	                return response.text();
 	            }).then(function (text) {
-	                var textObj = _this2.analyzedText(text);
+	                var t1 = window.performance.now();
+	                var loadingTime = t1 - t0;
+	                var textObj = _this2.getTextObj(text, loadingTime);
+	                console.log(textObj);
 	                _this2.setState({ loading: false, textObj: textObj });
 	            });
 	        }
@@ -22127,11 +22140,11 @@
 	            }
 	            var textObj = this.state.textObj;
 	            if (textObj) {
-	                var paragraphElements = textObj.paragraphs.map(function (para, index) {
+	                var paragraphElements = textObj.paragraphs.map(function (paraObj, index) {
 	                    return _react2.default.createElement(
 	                        _Paragraph2.default,
-	                        { lineLength: textObj.lineLength, key: index },
-	                        para
+	                        { key: index, lineLength: textObj.lineLength },
+	                        paraObj.text
 	                    );
 	                });
 	                var lineLengthInput = _react2.default.createElement(_LineLengthInput2.default, { updateFunction: this.updateLineLength, label: 'Line Length:', min: textObj.maxWordLength });

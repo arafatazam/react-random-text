@@ -15,11 +15,23 @@ class Container extends React.Component{
         this.updateLineLength = this.updateLineLength.bind(this);
     }
 
-    analyzedText(text){
-        text = text.trim();
-        var textObj = {};
-        textObj.paragraphs = text.split('\n\n');
-        textObj.maxWordLength = text.split(' ').reduce((max, word)=>{return Math.max(max,word.length);},0);
+    getTextObj(rawText, loadingTime){
+        var t0 = window.performance.now();
+        var text = rawText.trim();
+        var textObj = {loadingTime: loadingTime};
+        textObj.wordcount = text.match(/(\s|$|^)\w/g).length;
+        textObj.maxWordLength = text.split(' ')
+                                    .reduce((max, word)=>{
+                                        return Math.max(max,word.length);
+                                    },0);
+        textObj.paragraphs = text.split('\n\n')
+                                .map((para)=>{
+                                    var paraObj = {text:para};
+                                    paraObj.sentences = para.match(/\w[.?!](\s|$)/g).length;
+                                    return paraObj;
+                                });
+        var t1 = window.performance.now();
+        textObj.processingTime = t1-t0;
         return textObj;
     }
 
@@ -28,11 +40,16 @@ class Container extends React.Component{
         this.setState({loading: true, text:null});
         var rand = Math.floor(Math.random()*10+1);
         var url = "http://localhost:8081/proxy/api/"+rand+"/plaintext/long";
+
+        var t0 = window.performance.now();
         fetch(url, {"mode" : 'no-cors'})
             .then((response)=>{
                 return response.text();
             }).then((text)=>{
-                var textObj = this.analyzedText(text);
+                var t1 = window.performance.now();
+                var loadingTime = t1-t0;
+                var textObj = this.getTextObj(text, loadingTime);
+                console.log(textObj);
                 this.setState({loading: false, textObj:textObj});
             });
     }
@@ -52,7 +69,7 @@ class Container extends React.Component{
         }
         var textObj = this.state.textObj;
         if(textObj){
-            var paragraphElements = textObj.paragraphs.map((para, index)=>{return (<Paragraph lineLength={textObj.lineLength} key={index}>{para}</Paragraph>);});
+            var paragraphElements = textObj.paragraphs.map((paraObj, index)=>{return (<Paragraph key={index} lineLength={textObj.lineLength}>{paraObj.text}</Paragraph>);});
             var lineLengthInput = (<LineLengthInput updateFunction={this.updateLineLength} label="Line Length:" min={textObj.maxWordLength} />);
         }
         return (

@@ -22065,6 +22065,10 @@
 	
 	var _InfoBox2 = _interopRequireDefault(_InfoBox);
 	
+	var _TextObj = __webpack_require__(/*! ./TextObj */ 183);
+	
+	var _TextObj2 = _interopRequireDefault(_TextObj);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22090,30 +22094,7 @@
 	        return _this;
 	    }
 	
-	    // Text object is the main container which I'll be storing in the storage
-	
-	
 	    _createClass(Container, [{
-	        key: 'getTextObj',
-	        value: function getTextObj(rawText, loadingTime) {
-	            var t0 = window.performance.now();
-	            var text = rawText.trim();
-	            var textObj = { loadingTime: loadingTime };
-	            textObj.size = rawText.length;
-	            textObj.wordCount = text.match(/(\s|$|^)\w/g).length;
-	            textObj.maxWordLength = text.split(' ').reduce(function (max, word) {
-	                return Math.max(max, word.length);
-	            }, 0);
-	            textObj.paragraphs = text.split('\n\n').map(function (para) {
-	                var paraObj = { text: para };
-	                paraObj.sentences = para.match(/\w[.?!](\s|$)/g).length;
-	                return paraObj;
-	            });
-	            var t1 = window.performance.now();
-	            textObj.processingTime = t1 - t0;
-	            return textObj;
-	        }
-	    }, {
 	        key: 'loadText',
 	        value: function loadText() {
 	            var _this2 = this;
@@ -22128,7 +22109,7 @@
 	            }).then(function (text) {
 	                var t1 = window.performance.now();
 	                var loadingTime = t1 - t0;
-	                var textObj = _this2.getTextObj(text, loadingTime);
+	                var textObj = new _TextObj2.default(text, loadingTime);
 	                _this2.setState({ loading: false, textObj: textObj });
 	            });
 	        }
@@ -22151,20 +22132,19 @@
 	            }
 	
 	            var textObj = this.state.textObj;
+	
 	            if (textObj) {
-	                var paragraphElements = textObj.paragraphs.map(function (paraObj, index) {
+	                var paragraphElements = textObj.text.trim().split('\n\n').map(function (para, index) {
 	                    return _react2.default.createElement(
 	                        _Paragraph2.default,
 	                        { key: index, lineLength: textObj.lineLength },
-	                        paraObj.text
+	                        para
 	                    );
 	                });
 	                var lineLengthInput = _react2.default.createElement(_LineLengthInput2.default, { updateFunction: this.updateLineLength, label: 'Line Length:', min: textObj.maxWordLength });
 	                var information = _react2.default.createElement(_InfoBox2.default, {
-	                    paragraphs: textObj.paragraphs.length,
-	                    sentencesInParagraphs: textObj.paragraphs.map(function (paraObj) {
-	                        return paraObj.sentences;
-	                    }),
+	                    paragraphs: textObj.paragraphs,
+	                    sentencesInParagraphs: textObj.sentencesInParagraphs,
 	                    wordCount: textObj.wordCount,
 	                    loadingTime: textObj.loadingTime,
 	                    processingTime: textObj.processingTime,
@@ -22521,6 +22501,44 @@
 	}(_react2.default.Component);
 	
 	exports.default = InfoBox;
+
+/***/ },
+/* 183 */
+/*!***********************!*\
+  !*** ./js/TextObj.js ***!
+  \***********************/
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	// This is not a component but an object for better management
+	
+	var TextObj = function TextObj(rawText, loadingTime) {
+	    _classCallCheck(this, TextObj);
+	
+	    var t0 = window.performance.now();
+	    this.text = rawText;
+	    this.loadingTime = loadingTime;
+	    this.size = rawText.length;
+	    this.wordCount = rawText.match(/(\s|$|^)\w/g).length;
+	    this.maxWordLength = rawText.split(' ').reduce(function (max, word) {
+	        return Math.max(max, word.length);
+	    }, 0);
+	    this.sentencesInParagraphs = rawText.trim().split('\n\n').map(function (para) {
+	        return para.match(/\w[.?!](\s|$)/g).length;
+	    });
+	    this.paragraphs = this.sentencesInParagraphs.length;
+	    var t1 = window.performance.now();
+	    this.processingTime = t1 - t0;
+	};
+	
+	exports.default = TextObj;
 
 /***/ }
 /******/ ]);

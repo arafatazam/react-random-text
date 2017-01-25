@@ -22053,9 +22053,9 @@
 	
 	var _Spinner2 = _interopRequireDefault(_Spinner);
 	
-	var _Paragraph = __webpack_require__(/*! ./Paragraph */ 180);
+	var _TextBox = __webpack_require__(/*! ./TextBox */ 184);
 	
-	var _Paragraph2 = _interopRequireDefault(_Paragraph);
+	var _TextBox2 = _interopRequireDefault(_TextBox);
 	
 	var _LineLengthInput = __webpack_require__(/*! ./LineLengthInput */ 181);
 	
@@ -22087,7 +22087,8 @@
 	
 	        _this.state = {
 	            textObj: null,
-	            loading: false
+	            loading: false,
+	            fullText: false
 	        };
 	        _this.loadText = _this.loadText.bind(_this);
 	        _this.updateLineLength = _this.updateLineLength.bind(_this);
@@ -22134,13 +22135,11 @@
 	            var textObj = this.state.textObj;
 	
 	            if (textObj) {
-	                var paragraphElements = textObj.text.trim().split('\n\n').map(function (para, index) {
-	                    return _react2.default.createElement(
-	                        _Paragraph2.default,
-	                        { key: index, lineLength: textObj.lineLength },
-	                        para
-	                    );
-	                });
+	                var textWindow = _react2.default.createElement(
+	                    _TextBox2.default,
+	                    { lineLength: textObj.lineLength, fullText: this.state.fullText },
+	                    textObj.text
+	                );
 	                var lineLengthInput = _react2.default.createElement(_LineLengthInput2.default, { updateFunction: this.updateLineLength, label: 'Line Length:', min: textObj.maxWordLength });
 	                var information = _react2.default.createElement(_InfoBox2.default, {
 	                    paragraphs: textObj.paragraphs,
@@ -22155,11 +22154,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                _react2.default.createElement(
-	                    'div',
-	                    null,
-	                    paragraphElements
-	                ),
+	                textWindow,
 	                information,
 	                _react2.default.createElement(
 	                    'button',
@@ -22539,6 +22534,88 @@
 	};
 	
 	exports.default = TextObj;
+
+/***/ },
+/* 184 */
+/*!***********************!*\
+  !*** ./js/TextBox.js ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _Paragraph = __webpack_require__(/*! ./Paragraph */ 180);
+	
+	var _Paragraph2 = _interopRequireDefault(_Paragraph);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TextBox = function (_React$Component) {
+	    _inherits(TextBox, _React$Component);
+	
+	    function TextBox() {
+	        _classCallCheck(this, TextBox);
+	
+	        return _possibleConstructorReturn(this, (TextBox.__proto__ || Object.getPrototypeOf(TextBox)).apply(this, arguments));
+	    }
+	
+	    _createClass(TextBox, [{
+	        key: 'render',
+	        value: function render() {
+	            var _this2 = this;
+	
+	            var paragraphs = this.props.children.trim().split('\n\n');
+	
+	            if (!this.props.fullText) {
+	                if (paragraphs.length > 3) {
+	                    paragraphs = paragraphs.slice(-1);
+	                } else {
+	                    return _react2.default.createElement(
+	                        'div',
+	                        { className: 'text-box' },
+	                        _react2.default.createElement(
+	                            'p',
+	                            { className: 'message' },
+	                            'Less than 3 Paragraphs loaded'
+	                        )
+	                    );
+	                }
+	            }
+	
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'text-box' },
+	                paragraphs.map(function (paragraph, index) {
+	                    return _react2.default.createElement(
+	                        _Paragraph2.default,
+	                        { key: index, lineLength: _this2.props.lineLength },
+	                        paragraph
+	                    );
+	                })
+	            );
+	        }
+	    }]);
+	
+	    return TextBox;
+	}(_react2.default.Component);
+	
+	exports.default = TextBox;
 
 /***/ }
 /******/ ]);

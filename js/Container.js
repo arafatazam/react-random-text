@@ -1,6 +1,6 @@
 import React from 'react';
 import Spinner from './Spinner';
-import Paragraph from './Paragraph';
+import TextBox from './TextBox';
 import LineLengthInput from  './LineLengthInput';
 import InfoBox from './InfoBox';
 import TextObj from './TextObj';
@@ -11,7 +11,8 @@ class Container extends React.Component{
         super();
         this.state = {
             textObj: null,
-            loading: false
+            loading: false,
+            fullText: false
         };
         this.loadText = this.loadText.bind(this);
         this.updateLineLength = this.updateLineLength.bind(this);
@@ -55,12 +56,7 @@ class Container extends React.Component{
         var textObj = this.state.textObj;
 
         if(textObj){
-            var paragraphElements = textObj.text.trim().split('\n\n')
-                                            .map((para, index)=>{
-                                                return (
-                                                    <Paragraph key={index} lineLength={textObj.lineLength}>{para}</Paragraph>
-                                                );
-                                            });
+            var textWindow = (<TextBox lineLength={textObj.lineLength} fullText={this.state.fullText}>{textObj.text}</TextBox>);
             var lineLengthInput = (<LineLengthInput updateFunction={this.updateLineLength} label="Line Length:" min={textObj.maxWordLength} />);
             var information = (<InfoBox
                                     paragraphs={textObj.paragraphs}
@@ -75,7 +71,7 @@ class Container extends React.Component{
 
         return (
             <div>
-                <div>{paragraphElements}</div>
+                {textWindow}
                 {information}
                 <button onClick={this.loadText}>Analyze Output</button>
                 {lineLengthInput}

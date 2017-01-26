@@ -22676,7 +22676,7 @@
 	                    _react2.default.createElement(
 	                        "dd",
 	                        null,
-	                        this.props.loadingTime,
+	                        this.props.loadingTime.toFixed(2),
 	                        " milliseconds"
 	                    ),
 	                    _react2.default.createElement(
@@ -22687,7 +22687,7 @@
 	                    _react2.default.createElement(
 	                        "dd",
 	                        null,
-	                        this.props.processingTime,
+	                        this.props.processingTime.toFixed(2),
 	                        " milliseconds"
 	                    )
 	                )

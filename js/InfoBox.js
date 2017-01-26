@@ -23,8 +23,8 @@ class InfoBox extends React.Component{
                         </dd>
                         <dt>Word count:</dt><dd>{this.props.wordCount}</dd>
                         <dt>Size:</dt><dd>{this.props.size} Bytes</dd>
-                        <dt>Loading time:</dt><dd>{this.props.loadingTime} milliseconds</dd>
-                        <dt>Processing time:</dt><dd>{this.props.processingTime} milliseconds</dd>
+                        <dt>Loading time:</dt><dd>{this.props.loadingTime.toFixed(2)} milliseconds</dd>
+                        <dt>Processing time:</dt><dd>{this.props.processingTime.toFixed(2)} milliseconds</dd>
                     </div>
                 </div>
         );

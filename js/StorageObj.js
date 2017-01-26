@@ -42,17 +42,25 @@ class StorageObj{
         this.store();
     }
 
+    remove(){
+        this.load();
+        var data = this.data;
+        data.items.splice(data.cursor, 1);
+        if(data.cursor>=data.items.length){
+            data.cursor = data.items.length-1;
+        }
+        this.store();
+        return this.get();
+    }
+
     get(){
         this.load();
-        if(this.data.cursor==null){
-            return null;
-        }
         return this.data.items[this.data.cursor];
     }
 
     getNext(){
         this.load();
-        if(this.data.cursor==null){
+        if(this.data.cursor<0){
             return null;
         }
         var size = this.data.items.length;
@@ -63,7 +71,7 @@ class StorageObj{
 
     getPrev(){
         this.load();
-        if(this.data.cursor==null){
+        if(this.data.cursor<0){
             return null;
         }
         var size = this.data.items.length;

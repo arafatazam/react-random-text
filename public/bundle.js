@@ -22100,7 +22100,7 @@
 	        _this.loadText = _this.loadText.bind(_this);
 	        _this.updateLineLength = _this.updateLineLength.bind(_this);
 	        _this.showFullText = _this.showFullText.bind(_this);
-	        _this.deleteStorage = _this.deleteStorage.bind(_this);
+	        _this.removeCurrent = _this.removeCurrent.bind(_this);
 	        _this.historyNext = _this.historyNext.bind(_this);
 	        _this.historyPrev = _this.historyPrev.bind(_this);
 	        return _this;
@@ -22116,11 +22116,20 @@
 	        value: function historyPrev() {
 	            this.setState({ textObj: this.storage.getPrev() });
 	        }
+	
+	        //Not in use
+	
 	    }, {
 	        key: 'deleteStorage',
 	        value: function deleteStorage() {
 	            this.storage.destroy();
 	            this.setState({ textObj: null });
+	        }
+	    }, {
+	        key: 'removeCurrent',
+	        value: function removeCurrent() {
+	            var active = this.storage.remove();
+	            this.setState({ textObj: active });
 	        }
 	    }, {
 	        key: 'loadText',
@@ -22198,10 +22207,10 @@
 	                    { className: 'btn btn-default', onClick: this.historyPrev },
 	                    'Prev'
 	                );
-	                var removeHistoryBtn = _react2.default.createElement(
+	                var removeCurrentBtn = _react2.default.createElement(
 	                    'button',
-	                    { className: 'btn btn-danger', onClick: this.deleteStorage },
-	                    'Remove History'
+	                    { className: 'btn btn-danger', onClick: this.removeCurrent },
+	                    'Remove'
 	                );
 	            }
 	
@@ -22231,7 +22240,7 @@
 	                                    'Analyze Output'
 	                                ),
 	                                fullTextBtn,
-	                                removeHistoryBtn,
+	                                removeCurrentBtn,
 	                                historyPrev,
 	                                historyNext,
 	                                lineLengthInput
@@ -22796,19 +22805,28 @@
 	            this.store();
 	        }
 	    }, {
+	        key: 'remove',
+	        value: function remove() {
+	            this.load();
+	            var data = this.data;
+	            data.items.splice(data.cursor, 1);
+	            if (data.cursor >= data.items.length) {
+	                data.cursor = data.items.length - 1;
+	            }
+	            this.store();
+	            return this.get();
+	        }
+	    }, {
 	        key: 'get',
 	        value: function get() {
 	            this.load();
-	            if (this.data.cursor == null) {
-	                return null;
-	            }
 	            return this.data.items[this.data.cursor];
 	        }
 	    }, {
 	        key: 'getNext',
 	        value: function getNext() {
 	            this.load();
-	            if (this.data.cursor == null) {
+	            if (this.data.cursor < 0) {
 	                return null;
 	            }
 	            var size = this.data.items.length;
@@ -22820,7 +22838,7 @@
 	        key: 'getPrev',
 	        value: function getPrev() {
 	            this.load();
-	            if (this.data.cursor == null) {
+	            if (this.data.cursor < 0) {
 	                return null;
 	            }
 	            var size = this.data.items.length;

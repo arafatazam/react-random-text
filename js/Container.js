@@ -22,7 +22,7 @@ class Container extends React.Component{
         this.loadText = this.loadText.bind(this);
         this.updateLineLength = this.updateLineLength.bind(this);
         this.showFullText = this.showFullText.bind(this);
-        this.deleteStorage = this.deleteStorage.bind(this);
+        this.removeCurrent = this.removeCurrent.bind(this);
         this.historyNext = this.historyNext.bind(this);
         this.historyPrev = this.historyPrev.bind(this);
     }
@@ -35,9 +35,15 @@ class Container extends React.Component{
         this.setState({textObj: this.storage.getPrev()});
     }
 
+    //Not in use
     deleteStorage(){
         this.storage.destroy();
         this.setState({textObj:null});
+    }
+
+    removeCurrent(){
+        var active = this.storage.remove();
+        this.setState({textObj:active});
     }
 
     loadText(){
@@ -96,7 +102,7 @@ class Container extends React.Component{
             var fullTextBtn = <button className="btn btn-primary" onClick={this.showFullText}>Full Text</button>;
             var historyNext = <button className="btn btn-default" onClick={this.historyNext}>Next</button>;
             var historyPrev = <button className="btn btn-default" onClick={this.historyPrev}>Prev</button>;
-            var removeHistoryBtn = <button className="btn btn-danger" onClick={this.deleteStorage}>Remove History</button>;
+            var removeCurrentBtn = <button className="btn btn-danger" onClick={this.removeCurrent}>Remove</button>;
         }
 
 
@@ -111,7 +117,7 @@ class Container extends React.Component{
                             <div className="panel-body">
                                 <button className="btn btn-success" onClick={this.loadText}>Analyze Output</button>
                                 {fullTextBtn}
-                                {removeHistoryBtn}
+                                {removeCurrentBtn}
                                 {historyPrev}
                                 {historyNext}
                                 {lineLengthInput}
